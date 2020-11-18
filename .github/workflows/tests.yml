@@ -1,0 +1,42 @@
+name: Tests
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  cachetest:
+    name: Cache Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          key: a-1
+          path: |
+            a
+      - uses: actions/cache@v2
+        with:
+          key: b-1
+          path: |
+            b
+      - name: Show cache
+        run: |
+          for dir in a b; do
+            if [ -d "$dir" ]; then
+              find $dir
+              for f in ${dir}/*; do
+                echo "here's $f:"
+                cat $f
+              done
+            else
+              echo "no $dir yet!"
+            fi
+          done
+      - name: populate
+        run: |
+          mkdir -p a b
+          date > a/foo
+          date > a/a-made-on-run-$GITHUB_RUN_ID
+          date > b/bar
+          date > b/b-made-on-run-$GITHUB_RUN_ID
